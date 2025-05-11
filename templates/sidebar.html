@@ -1,0 +1,26 @@
+<nav>
+    <div class="nav-container">
+      <div class="logo">Attendify</div>
+  
+      <input type="checkbox" id="toggle" />
+      <label for="toggle" class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+  
+      <ul class="menu">
+        <li><a href="{% url 'dashboard-home' %}">Dashboard</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+        <li>
+          <a href="#">Services ▾</a>
+          <ul>
+            <li><a href="#">First Service</a></li>
+            <li><a href="#">Second Service</a></li>
+            <li><a href="#">Third Service</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </nav>

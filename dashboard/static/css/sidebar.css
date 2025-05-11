@@ -1,0 +1,122 @@
+nav {
+    background-color: var(--primary);
+    padding: 1rem 2rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+
+
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    color: var(--text-light);
+}
+
+.logo {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+/*  Hamburger  */
+#toggle {
+    display: none;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+}
+
+.hamburger span {
+    height: 3px;
+    width: 25px;
+    background: var(--text-light);
+    border-radius: 3px;
+}
+
+/*  Menu  */
+.menu {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    transition: all 0.3s ease;
+}
+
+.menu li {
+    position: relative;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: var(--text-light);
+    font-weight: 500;
+    padding: 0.5rem;
+    transition: 0.3s;
+}
+
+.menu li a:hover {
+    color: var(--secondary);
+}
+
+/*  Dropdown  */
+.menu li ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--primary-hover);
+    display: none;
+    list-style: none;
+    padding: 0.5rem 0;
+    border-radius: 6px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    min-width: 160px;
+}
+
+.menu li:hover ul {
+    display: block;
+}
+
+.menu li ul li a {
+    padding: 0.6rem 1rem;
+    display: block;
+}
+
+.menu li ul li a:hover {
+    border-radius: 10px;
+    background-color: var(--secondary);
+    color: var(--text-light);
+}
+
+/*  Responsive  */
+@media (max-width: 768px) {
+    .hamburger {
+        display: flex;
+    }
+
+    .menu {
+        width: 100%;
+        flex-direction: column;
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    .menu li {
+        width: 100%;
+    }
+
+    .menu li ul {
+        position: static;
+        box-shadow: none;
+    }
+
+    #toggle:checked+.hamburger+.menu {
+        max-height: 1000px;
+        margin-top: 2rem;
+    }
+}
