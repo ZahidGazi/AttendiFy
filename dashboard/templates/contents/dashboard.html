@@ -1,0 +1,53 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Dashboard - Attendify{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="mb-4">Dashboard Overview</h1>
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Total Students Registered</h5>
+                <p class="card-text display-6">1200</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Today's Attendance Count</h5>
+                <p class="card-text display-6">950</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Absent Students Today</h5>
+                <p class="card-text display-6">250</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Unauthorized Entry Alerts</h5>
+                <p class="card-text display-6">5</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <canvas id="attendanceTrendsChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="attendancePieChart"></canvas>
+    </div>
+</div>
+{% endblock %}
+

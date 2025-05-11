@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="bg-dark text-white p-3 vh-100" id="sidebar">
+        <h2 class="fw-bold">Attendify</h2>
+        <ul class="nav flex-column mt-4">
+            <li class="nav-item mb-2">
+                <a href="{% url 'dashboard-home' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard-home' %}active text-primary{% else %}text-white{% endif %}">
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'attendance-records' %}" class="nav-link {% if request.resolver_match.url_name == 'attendance-records' %}active text-primary{% else %}text-white{% endif %}">
+                    Attendance Records
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'students' %}" class="nav-link {% if request.resolver_match.url_name == 'students' %}active text-primary{% else %}text-white{% endif %}">
+                    Students
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'staff' %}" class="nav-link {% if request.resolver_match.url_name == 'staff' %}active text-primary{% else %}text-white{% endif %}">
+                    Staff
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'alerts' %}" class="nav-link {% if request.resolver_match.url_name == 'alerts' %}active text-primary{% else %}text-white{% endif %}">
+                    Alerts
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'settings' %}" class="nav-link {% if request.resolver_match.url_name == 'settings' %}active text-primary{% else %}text-white{% endif %}">
+                    Settings
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-dark ">
+            <div class="container-fluid">
+            <div class="d-flex align-items-center ms-auto">
+                <div class="dropdown text-center">
+                <div class="rounded-circle bg-white d-flex justify-content-center align-items-center" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; width: 40px; height: 40px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" style="width: 30px; height: 30px;">
+                        <path d="M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H4ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13Z"></path>
+                    </svg>
+                    </svg>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                </div>
+            </div>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div class="container mt-4 bg-secondary">
+            {% block dashboard_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

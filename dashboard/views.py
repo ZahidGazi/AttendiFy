@@ -17,9 +17,29 @@ def login_view(request):
 
 @login_required(login_url='login')
 def dashboard_home(request):
-    return render(request, 'dashboard.html')
+    return render(request, 'contents/dashboard.html')
 
 
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+@login_required(login_url='login')
+def attendance_records(request):
+    return render(request, 'contents/attendance_records.html')
+
+@login_required(login_url='login')
+def students(request):
+    return render(request, 'contents/students.html')
+
+@login_required(login_url='login')
+def staff(request):
+    return render(request, 'contents/staff.html')
+
+@login_required(login_url='login')
+def alerts(request):
+    return render(request, 'contents/alerts.html')
+
+@login_required(login_url='login')
+def settings(request):
+    return render(request, 'contents/settings.html')

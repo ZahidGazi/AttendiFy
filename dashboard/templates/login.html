@@ -3,21 +3,23 @@
 
 {% block title %}Login – Attendify{% endblock %}
 
-{% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
-{% endblock %}
-
 {% block content %}
-<div class="card text-center mt-8" style="max-width: 400px; margin: auto;">
-    <h2>Admin Login</h2>
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit" class="btn">Login</button>
-    </form>
+<div class="d-flex justify-content-center align-items-center vh-100 bg-dark text-light">
+    <div class="card bg-secondary text-light p-4" style="max-width: 400px; width: 100%;">
+        <h2 class="text-center mb-4">Admin Login</h2>
+        {% if error %}
+            <p class="text-danger text-center">{{ error }}</p>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <input type="text" name="username" class="form-control" placeholder="Username" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
