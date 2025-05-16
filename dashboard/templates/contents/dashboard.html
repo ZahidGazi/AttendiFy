@@ -4,10 +4,23 @@
 {% block title %}Dashboard - Attendify{% endblock %}
 
 {% block dashboard_content %}
-<h1 class="mb-4">Welcome {{ request.user.username }} </h1>
+<h1 class="mb-4 text-center">Welcome {{ request.user.username }} </h1>
+<div class="mb-4">
+    <form method="get" class="d-flex align-items-center">
+        <label for="class-select" class="me-2 text-bold">Select Class:</label>
+        <select id="class-select" name="class" class="form-select w-auto me-2">
+            <option value="">All Classes</option>
+            <option value="1">Class 1</option>
+            <option value="2">Class 2</option>
+            <option value="3">Class 3</option>
+            <!-- Add more classes as needed -->
+        </select>
+        <button type="submit" class="btn btn-primary">View</button>
+    </form>
+</div>
 <div class="row">
     <div class="col-md-3">
-        <div class="card text-center shadow-sm">
+        <div class="card text-center shadow-sm bg-dark text-light">
             <div class="card-body">
                 <h5 class="card-title">Total Students Registered</h5>
                 <p class="card-text display-6">1200</p>
@@ -15,7 +28,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-center shadow-sm">
+        <div class="card text-center shadow-sm bg-dark text-light">
             <div class="card-body">
                 <h5 class="card-title">Today's Attendance Count</h5>
                 <p class="card-text display-6">950</p>
@@ -23,7 +36,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-center shadow-sm">
+        <div class="card text-center shadow-sm bg-dark text-light">
             <div class="card-body">
                 <h5 class="card-title">Absent Students Today</h5>
                 <p class="card-text display-6">250</p>
@@ -31,7 +44,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-center shadow-sm">
+        <div class="card text-center shadow-sm bg-dark text-light">
             <div class="card-body">
                 <h5 class="card-title">Unauthorized Entry Alerts</h5>
                 <p class="card-text display-6">5</p>
@@ -40,14 +53,86 @@
     </div>
 </div>
 
-<!-- Charts Section -->
 <div class="row mt-4">
-    <div class="col-md-6">
-        <canvas id="attendanceTrendsChart"></canvas>
+    <div class="col-md-8 mb-4">
+        <div class="card p-3 bg-dark text-light">
+            <h5 class="card-title">Attendance Trend (Past 7 Days)</h5>
+            <canvas id="attendanceTrendChart" height="370"></canvas>
+        </div>
     </div>
-    <div class="col-md-6">
-        <canvas id="attendancePieChart"></canvas>
+    <div class="col-md-4 mb-4">
+        <div class="card p-3 bg-dark text-light">
+            <h5 class="card-title">Today's Attendance Breakdown</h5>
+            <canvas id="attendancePieChart" height="100"></canvas>
+        </div>
     </div>
 </div>
+
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        <div class="card p-3 bg-dark text-light">
+            <h5 class="card-title">Top 3 Students (Best Attendance)</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item bg-dark text-light">John Doe - 100%</li>
+                <li class="list-group-item bg-dark text-light">Jane Smith - 99%</li>
+                <li class="list-group-item bg-dark text-light">Alex Brown - 98%</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card p-3 bg-dark text-light">
+            <h5 class="card-title">Frequent Absentees</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item bg-dark text-light">Sam Wilson - 5 absences</li>
+                <li class="list-group-item bg-dark text-light">Lisa Ray - 4 absences</li>
+                <li class="list-group-item bg-dark text-light">Tom Lee - 4 absences</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Example data for charts (replace with dynamic data from backend)
+const trendCtx = document.getElementById('attendanceTrendChart').getContext('2d');
+const pieCtx = document.getElementById('attendancePieChart').getContext('2d');
+
+new Chart(trendCtx, {
+    type: 'line',
+    data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+            label: 'Attendance',
+            data: [30, 32, 28, 35, 33, 31, 34],
+            borderColor: '#4f8cff',
+            backgroundColor: 'rgba(79,140,255,0.2)',
+            fill: true,
+            tension: 0.3
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } }
+    }
+});
+
+new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+        labels: ['Present', 'Absent', 'Manual'],
+        datasets: [{
+            data: [80, 15, 5],
+            backgroundColor: ['#4caf50', '#f44336', '#ff9800']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+    }
+});
+</script>
 {% endblock %}
 

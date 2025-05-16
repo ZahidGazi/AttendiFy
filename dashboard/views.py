@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from datetime import date
 
 def login_view(request):
     if request.method == 'POST':
@@ -26,8 +27,9 @@ def logout_view(request):
     return redirect('login')
 
 @login_required(login_url='login')
-def attendance_records(request):
-    return render(request, 'contents/attendance_records.html')
+def attendance(request):
+    default_date = date.today().isoformat()
+    return render(request, 'contents/attendance.html', {'default_date': default_date})
 
 @login_required(login_url='login')
 def students(request):
