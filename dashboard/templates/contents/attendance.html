@@ -1,4 +1,5 @@
 {% extends "dashboard_base.html" %}
+{% load static %}
 
 {% block dashboard_content %}
 <h1 class="mb-4">Attendance Records</h1>
@@ -7,13 +8,12 @@
         <label for="class-select" class="me-2">Select Class:</label>
         <select id="class-select" name="class" class="form-select w-auto me-2">
             <option value="">All Classes</option>
-            <option value="1">Class 1</option>
-            <option value="2">Class 2</option>
-            <option value="3">Class 3</option>
-            <!-- Add more classes as needed -->
+            {% for class in classes %}
+                <option value="{{ class.id }}" {% if class.id|stringformat:'s' == selected_class_id %}selected{% endif %}>{{ class.name }}</option>
+            {% endfor %}
         </select>
         <label for="date-select" class="me-2 ms-3">Select Date:</label>
-        <input type="date" id="date-select" name="date" class="form-control w-auto me-2" value="{{ request.GET.date|default:default_date }}">
+        <input type="date" id="date-select" name="date" class="form-control w-auto me-2" value="{{ default_date }}">
         <button type="submit" class="btn btn-primary me-2">View</button>
         <button type="button" class="btn btn-success me-2">Take Attendance</button>
         <button type="button" class="btn btn-primary">CSV Download</button>
@@ -30,34 +30,26 @@
                     <th>Student ID</th>
                     <th>Name</th>
                     <th>Roll No</th>
-                    <th>Status</th>
+                    <th class="text-center">Status</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Example student rows, replace with dynamic data -->
+                {% for student in students %}
                 <tr>
-                    <td>1001</td>
-                    <td>John Doe</td>
-                    <td>1</td>
-                    <td>
-                        <select name="status_1001" class="form-select">
-                            <option value="Present">Present</option>
-                            <option value="Absent">Absent</option>
+                    <td>{{ student.id }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.roll_number }}</td>
+                    <td class="text-center">
+                        <select name="status_{{ student.id }}" style="max-width: 150px; display: inline-block;" class="form-select {% if student.attendance_status == 'Absent' %}bg-danger text-white{% elif student.attendance_status == 'Present' %}bg-success text-white{% endif %} dropdown-bg">
+                            <option value="" {% if not student.attendance_status %}selected{% endif %} disabled>Select...</option>
+                            <option value="Present" {% if student.attendance_status == 'Present' %}selected{% endif %}>Present</option>
+                            <option value="Absent" {% if student.attendance_status == 'Absent' %}selected{% endif %}>Absent</option>
                         </select>
                     </td>
                 </tr>
-                <tr>
-                    <td>1002</td>
-                    <td>Jane Smith</td>
-                    <td>2</td>
-                    <td>
-                        <select name="status_1002" class="form-select">
-                            <option value="Present">Present</option>
-                            <option value="Absent">Absent</option>
-                        </select>
-                    </td>
-                </tr>
-                <!-- Repeat for more students -->
+                {% empty %}
+                <tr><td colspan="4" class="text-center">No students found.</td></tr>
+                {% endfor %}
             </tbody>
         </table>
         <div class="text-end">

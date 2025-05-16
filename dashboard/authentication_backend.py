@@ -1,5 +1,5 @@
 from django.contrib.auth.backends import BaseBackend
-from dashboard.models import Admin
+from attendance.models import Admin
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password
 

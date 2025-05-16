@@ -10,20 +10,19 @@
         <label for="class-select" class="me-2 text-bold">Select Class:</label>
         <select id="class-select" name="class" class="form-select w-auto me-2">
             <option value="">All Classes</option>
-            <option value="1">Class 1</option>
-            <option value="2">Class 2</option>
-            <option value="3">Class 3</option>
-            <!-- Add more classes as needed -->
+            {% for class in classes %}
+                <option value="{{ class.id }}" {% if class.id|stringformat:'s' == selected_class_id %}selected{% endif %}>{{ class.name }}</option>
+            {% endfor %}
         </select>
         <button type="submit" class="btn btn-primary">View</button>
     </form>
 </div>
-<div class="row">
+<div class="row justify-content-center">
     <div class="col-md-3">
         <div class="card text-center shadow-sm bg-dark text-light">
             <div class="card-body">
                 <h5 class="card-title">Total Students Registered</h5>
-                <p class="card-text display-6">1200</p>
+                <p class="card-text display-6">{{ total_students }}</p>
             </div>
         </div>
     </div>
@@ -31,7 +30,7 @@
         <div class="card text-center shadow-sm bg-dark text-light">
             <div class="card-body">
                 <h5 class="card-title">Today's Attendance Count</h5>
-                <p class="card-text display-6">950</p>
+                <p class="card-text display-6">{{ today_attendance }}</p>
             </div>
         </div>
     </div>
@@ -39,15 +38,7 @@
         <div class="card text-center shadow-sm bg-dark text-light">
             <div class="card-body">
                 <h5 class="card-title">Absent Students Today</h5>
-                <p class="card-text display-6">250</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-center shadow-sm bg-dark text-light">
-            <div class="card-body">
-                <h5 class="card-title">Unauthorized Entry Alerts</h5>
-                <p class="card-text display-6">5</p>
+                <p class="card-text display-6">{{ absent_today }}</p>
             </div>
         </div>
     </div>
@@ -57,13 +48,13 @@
     <div class="col-md-8 mb-4">
         <div class="card p-3 bg-dark text-light">
             <h5 class="card-title">Attendance Trend (Past 7 Days)</h5>
-            <canvas id="attendanceTrendChart" height="370"></canvas>
+            <div id="attendanceTrendChart" style="height:400px;"></div>
         </div>
     </div>
     <div class="col-md-4 mb-4">
         <div class="card p-3 bg-dark text-light">
             <h5 class="card-title">Today's Attendance Breakdown</h5>
-            <canvas id="attendancePieChart" height="100"></canvas>
+            <div id="attendancePieChart" style="height:400px;"></div>
         </div>
     </div>
 </div>
@@ -73,9 +64,11 @@
         <div class="card p-3 bg-dark text-light">
             <h5 class="card-title">Top 3 Students (Best Attendance)</h5>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item bg-dark text-light">John Doe - 100%</li>
-                <li class="list-group-item bg-dark text-light">Jane Smith - 99%</li>
-                <li class="list-group-item bg-dark text-light">Alex Brown - 98%</li>
+                {% for student in top_students %}
+                    <li class="list-group-item bg-dark text-light">{{ student.name }} - {{ student.presents }} presents</li>
+                {% empty %}
+                    <li class="list-group-item bg-dark text-light">No data</li>
+                {% endfor %}
             </ul>
         </div>
     </div>
@@ -83,9 +76,11 @@
         <div class="card p-3 bg-dark text-light">
             <h5 class="card-title">Frequent Absentees</h5>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item bg-dark text-light">Sam Wilson - 5 absences</li>
-                <li class="list-group-item bg-dark text-light">Lisa Ray - 4 absences</li>
-                <li class="list-group-item bg-dark text-light">Tom Lee - 4 absences</li>
+                {% for student in frequent_absentees %}
+                    <li class="list-group-item bg-dark text-light">{{ student.name }} - {{ student.absents }} absences</li>
+                {% empty %}
+                    <li class="list-group-item bg-dark text-light">No data</li>
+                {% endfor %}
             </ul>
         </div>
     </div>
@@ -94,45 +89,51 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+{# Pass data safely to JS #}
+{{ week_days_labels|json_script:"week-days-labels" }}
+{{ attendance_trend|json_script:"attendance-trend" }}
+{{ pie_data|json_script:"pie-data" }}
+
 <script>
-// Example data for charts (replace with dynamic data from backend)
-const trendCtx = document.getElementById('attendanceTrendChart').getContext('2d');
-const pieCtx = document.getElementById('attendancePieChart').getContext('2d');
+const weekDaysLabels = JSON.parse(document.getElementById('week-days-labels').textContent);
+const attendanceTrend = JSON.parse(document.getElementById('attendance-trend').textContent);
+const pieData = JSON.parse(document.getElementById('pie-data').textContent);
 
-new Chart(trendCtx, {
-    type: 'line',
-    data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-            label: 'Attendance',
-            data: [30, 32, 28, 35, 33, 31, 34],
-            borderColor: '#4f8cff',
-            backgroundColor: 'rgba(79,140,255,0.2)',
-            fill: true,
-            tension: 0.3
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { display: false } }
-    }
-});
+// Line chart (Attendance Trend)
+Plotly.newPlot('attendanceTrendChart', [{
+    x: weekDaysLabels,
+    y: attendanceTrend,
+    type: 'scatter',
+    mode: 'lines+markers',
+    line: { color: '#4f8cff', width: 3 },
+    fill: 'tozeroy',
+    fillcolor: 'rgba(79,140,255,0.2)',
+    marker: { color: '#4f8cff' },
+    name: 'Attendance'
+}], {
+    margin: { t: 30, l: 40, r: 10, b: 40 },
+    paper_bgcolor: '#212529',
+    plot_bgcolor: '#212529',
+    font: { color: '#fff' },
+    xaxis: { title: '', tickfont: { color: '#fff' }, gridcolor: '#444' },
+    yaxis: { title: '', tickfont: { color: '#fff' }, gridcolor: '#444' },
+    showlegend: false
+}, {responsive: true});
 
-new Chart(pieCtx, {
+// Pie chart (Today's Attendance Breakdown)
+Plotly.newPlot('attendancePieChart', [{
+    values: pieData,
+    labels: ['Present', 'Absent'],
     type: 'pie',
-    data: {
-        labels: ['Present', 'Absent', 'Manual'],
-        datasets: [{
-            data: [80, 15, 5],
-            backgroundColor: ['#4caf50', '#f44336', '#ff9800']
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { position: 'bottom' } }
-    }
-});
+    marker: { colors: ['#4caf50', '#f44336'] }
+}], {
+    margin: { t: 30, l: 10, r: 10, b: 10 },
+    paper_bgcolor: '#212529',
+    font: { color: '#fff' },
+    legend: { orientation: 'h', y: -0.1 }
+}, {responsive: true});
 </script>
 {% endblock %}
 
