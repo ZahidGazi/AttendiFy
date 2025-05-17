@@ -1,6 +1,6 @@
 {% extends "dashboard_base.html" %}
-{% load static %}
 
+{% block title %}Attendance - Attendify{% endblock %}
 {% block dashboard_content %}
 <h1 class="mb-4">Attendance Records</h1>
 <div class="mb-4">
@@ -16,7 +16,15 @@
         <input type="date" id="date-select" name="date" class="form-control w-auto me-2" value="{{ default_date }}">
         <button type="submit" class="btn btn-primary me-2">View</button>
         <button type="button" class="btn btn-success me-2">Take Attendance</button>
-        <button type="button" class="btn btn-primary">CSV Download</button>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Download
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'attendance-download' %}?class={{ selected_class_id }}&date={{ default_date }}&filetype=csv">Download as CSV</a></li>
+                <li><a class="dropdown-item" href="{% url 'attendance-download' %}?class={{ selected_class_id }}&date={{ default_date }}&filetype=xlsx">Download as XLSX</a></li>
+            </ul>
+        </div>
     </form>
 </div>
 

@@ -3,6 +3,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% block dashboard_extra_head %} {% endblock %}
 {% endblock %}
 {% block content %}
 <div class="d-flex flex-column">
@@ -80,5 +81,6 @@
 </div>
 {% endblock %}
 {% block extra_js %}
+{% block dashboard_extra_js %}{% endblock %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

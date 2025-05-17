@@ -1,5 +1,4 @@
 {% extends "dashboard_base.html" %}
-{% load static %}
 
 {% block title %}Dashboard - Attendify{% endblock %}
 
@@ -88,7 +87,7 @@
 
 {% endblock %}
 
-{% block extra_js %}
+{% block dashboard_extra_js %}
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 {# Pass data safely to JS #}

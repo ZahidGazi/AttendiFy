@@ -6,6 +6,10 @@ from datetime import date
 from attendance.models import Student, Attendance, ClassRoom
 from datetime import date, timedelta
 from django.db.models import Count, Q
+from django.http import HttpResponse
+import csv
+import io
+import openpyxl
 
 def login_view(request):
     if request.method == 'POST':
@@ -138,3 +142,59 @@ def alerts(request):
 @login_required(login_url='login')
 def settings(request):
     return render(request, 'contents/settings.html')
+
+@login_required(login_url='login')
+def attendance_download(request):
+    from attendance.models import Student, Attendance, ClassRoom
+    class_id = request.GET.get('class')
+    date_str = request.GET.get('date')
+    filetype = request.GET.get('filetype', 'csv')
+    if date_str:
+        from datetime import datetime
+        try:
+            selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except Exception:
+            from datetime import date
+            selected_date = date.today()
+    else:
+        from datetime import date
+        selected_date = date.today()
+
+    classroom_name = "all_classes"
+    students = Student.objects.all().select_related('student_class')
+    if class_id:
+        students = students.filter(student_class_id=class_id)
+        classroom = ClassRoom.objects.filter(id=class_id).first()
+        if classroom:
+            classroom_name = classroom.name.replace(" ", "_")
+
+    attendance_records = Attendance.objects.filter(student__in=students, date=selected_date)
+    attendance_map = {a.student.id: a.status for a in attendance_records}
+
+    filename = f"{classroom_name}_attendance_{selected_date}"
+    headers = ['Student ID', 'Name', 'Roll No', 'Status']
+    data_rows = [
+        [student.id, student.name, student.roll_number, attendance_map.get(student.id, '')]
+        for student in students
+    ]
+
+    if filetype == 'xlsx':
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.append(headers)
+        for row in data_rows:
+            ws.append(row)
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+        response = HttpResponse(output.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="{filename}.xlsx"'
+        return response
+    else:  # default to CSV
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="{filename}.csv"'
+        writer = csv.writer(response)
+        writer.writerow(headers)
+        for row in data_rows:
+            writer.writerow(row)
+        return response
