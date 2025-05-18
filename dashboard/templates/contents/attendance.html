@@ -3,29 +3,37 @@
 {% block title %}Attendance - Attendify{% endblock %}
 {% block dashboard_content %}
 <h1 class="mb-4">Attendance Records</h1>
-<div class="mb-4">
+<div class="mb-4 d-flex justify-content-between align-items-center">
     <form method="get" class="d-flex align-items-center flex-wrap gap-2">
-        <label for="class-select" class="me-2">Select Class:</label>
         <select id="class-select" name="class" class="form-select w-auto me-2">
             <option value="">All Classes</option>
             {% for class in classes %}
-                <option value="{{ class.id }}" {% if class.id|stringformat:'s' == selected_class_id %}selected{% endif %}>{{ class.name }}</option>
+            <option value="{{ class.id }}" {% if class.id|stringformat:'s' == selected_class_id %}selected{% endif %}>{{ class.name }}</option>
             {% endfor %}
         </select>
-        <label for="date-select" class="me-2 ms-3">Select Date:</label>
         <input type="date" id="date-select" name="date" class="form-control w-auto me-2" value="{{ default_date }}">
         <button type="submit" class="btn btn-primary me-2">View</button>
-        <button type="button" class="btn btn-success me-2">Take Attendance</button>
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                Download
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'attendance-download' %}?class={{ selected_class_id }}&date={{ default_date }}&filetype=csv">Download as CSV</a></li>
-                <li><a class="dropdown-item" href="{% url 'attendance-download' %}?class={{ selected_class_id }}&date={{ default_date }}&filetype=xlsx">Download as XLSX</a></li>
-            </ul>
-        </div>
     </form>
+    
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success me-2">Take Attendance</button>
+        <form method="get" action="" style="margin:0;">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Download
+                </button>
+                <ul class="dropdown-menu">
+                    <input type="hidden" name="class" value="{{ selected_class_id }}">
+                    <input type="hidden" name="date" value="{{ default_date }}">
+                    <input type="hidden" name="action" value="download">
+                    <li>
+                        <button type="submit" name="filetype" value="csv" class="dropdown-item">Download as CSV</button>
+                    </li>
+                    <li>
+                        <button type="submit" name="filetype" value="xlsx" class="dropdown-item">Download as XLSX</button>
+                    </li>
+                </ul>
+        </form>
+    </div>
 </div>
 
 <h4 class="mt-4">Edit Attendance:</h4>
