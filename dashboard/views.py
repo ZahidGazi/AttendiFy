@@ -295,8 +295,8 @@ def students(request):
     return render(request, 'contents/students.html', context)
 
 @login_required(login_url='login')
-def staff(request):
-    return render(request, 'contents/staff.html')
+def classrooms(request):
+    return render(request, 'contents/classrooms.html')
 
 @login_required(login_url='login')
 def alerts(request):
