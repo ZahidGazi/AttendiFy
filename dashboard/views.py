@@ -55,9 +55,7 @@ def dashboard_home(request):
     ]
 
     # Pie chart data
-    present_count = today_attendance
-    absent_count = Attendance.objects.filter(student__in=students, date=today, status='Absent').count()
-    pie_data = [present_count, absent_count]
+    pie_data = [today_attendance, absent_today]
 
     # Top 3 students with best attendance (most presents)
     top_students = students.annotate(presents=Count('attendance', filter=Q(attendance__status='Present'))).order_by('-presents')[:3]
@@ -72,8 +70,6 @@ def dashboard_home(request):
         'absent_today': absent_today,
         'attendance_trend': attendance_trend,
         'week_days_labels': week_days_labels,
-        'present_count': present_count,
-        'absent_count': absent_count,
         'pie_data': pie_data,
         'top_students': top_students,
         'frequent_absentees': frequent_absentees,
@@ -296,7 +292,40 @@ def students(request):
 
 @login_required(login_url='login')
 def classrooms(request):
-    return render(request, 'contents/classrooms.html')
+    classrooms = ClassRoom.objects.all().order_by('id')
+
+    # Handle Add Classroom
+    if request.method == 'POST' and request.POST.get('action') == 'add':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        if name:
+            ClassRoom.objects.create(name=name, description=description)
+        return redirect(request.path)
+
+    # Handle Edit Classroom
+    if request.method == 'POST' and request.POST.get('action') == 'edit':
+        classroom_id = request.POST.get('classroom_id')
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        classroom = ClassRoom.objects.filter(id=classroom_id).first()
+        if classroom and name:
+            classroom.name = name
+            classroom.description = description
+            classroom.save()
+        return redirect(request.path)
+
+    # Handle Delete Classroom
+    if request.method == 'POST' and request.POST.get('action') == 'delete':
+        classroom_id = request.POST.get('classroom_id')
+        classroom = ClassRoom.objects.filter(id=classroom_id).first()
+        if classroom:
+            classroom.delete()
+        return redirect(request.path)
+
+    context = {
+        'classrooms': classrooms,
+    }
+    return render(request, 'contents/classrooms.html', context)
 
 @login_required(login_url='login')
 def alerts(request):

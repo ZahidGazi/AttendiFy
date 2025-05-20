@@ -29,11 +29,15 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '4ag!g=ki3cd-^hr)7y%r9i0+b(!ywg@92ir
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+
+# cannot use a wildcard ("*") for CSRF_TRUSTED_ORIGINS therefore need this to update everytime if using ngrok hehe
+CSRF_TRUSTED_ORIGINS = [
+    "https://eb97-2409-40c0-a-3e00-641b-d536-2f8b-2698.ngrok-free.app"
+]
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

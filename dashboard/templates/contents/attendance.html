@@ -1,22 +1,23 @@
 {% extends "dashboard_base.html" %}
 
 {% block title %}Attendance - Attendify{% endblock %}
+
 {% block dashboard_content %}
-<h1 class="mb-4">Attendance Records</h1>
+<h1 class="mb-4 text-center">Attendance Records</h1>
 <div class="mb-4 d-flex justify-content-between align-items-center">
-    <form method="get" class="d-flex align-items-center flex-wrap gap-2">
-        <select id="class-select" name="class" class="form-select w-auto me-2">
+    <form method="get" class="d-flex align-items-center flex-wrap gap-2" onchange="this.form.submit()">
+        {% csrf_token %}
+        <select id="class-select" name="class" class="form-select w-auto">
             <option value="">All Classes</option>
             {% for class in classes %}
             <option value="{{ class.id }}" {% if class.id|stringformat:'s' == selected_class_id %}selected{% endif %}>{{ class.name }}</option>
             {% endfor %}
         </select>
-        <input type="date" id="date-select" name="date" class="form-control w-auto me-2" value="{{ default_date }}">
-        <button type="submit" class="btn btn-primary me-2">View</button>
+        <input type="date" id="date-select" name="date" class="form-control w-auto" value="{{ default_date }}">
     </form>
     
     <div class="d-flex flex-wrap gap-2">
-        <button type="button" class="btn btn-success me-2">Take Attendance</button>
+        <button type="button" class="btn btn-success">Take Attendance</button>
         <form method="get" action="" style="margin:0;">
                 <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     Download
@@ -37,9 +38,9 @@
 </div>
 
 <h4 class="mt-4">Edit Attendance:</h4>
-<div style="max-height: 600px; overflow-y: auto;">
-    <form method="post" action="">
-        {% csrf_token %}
+<form method="post" action="">
+    {% csrf_token %}
+    <div class="table_data">
         <table class="table table-dark table-striped align-middle">
             <thead>
                 <tr>
@@ -68,9 +69,9 @@
                 {% endfor %}
             </tbody>
         </table>
-        <div class="text-end">
-            <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-    </form>
-</div>
+    </div>
+    <div class="text-end mt-3">
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+</form>
 {% endblock %}
