@@ -16,7 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import openpyxl
 
-from attendance.models import Student, Attendance, Course
+from attendance.models import Student, Attendance, Course, Camera, AttendanceSchedule
 
 
 def login_view(request):
@@ -329,7 +329,40 @@ def courses(request):
 
 @login_required(login_url='login')
 def schedule(request):
-    return render(request, 'contents/schedule.html')
+    # Fetch all schedules, courses, and cameras
+    schedules = AttendanceSchedule.objects.select_related('course', 'camera').order_by('-date', '-time')
+    courses = Course.objects.all()
+    cameras = Camera.objects.all()
+
+    # Handle Add Schedule
+    if request.method == 'POST' and request.POST.get('action') == 'add':
+        course_id = request.POST.get('course')
+        camera_id = request.POST.get('camera')
+        date_val = request.POST.get('date')
+        time_val = request.POST.get('time')
+        if course_id and camera_id and date_val and time_val:
+            AttendanceSchedule.objects.create(
+                course_id=course_id,
+                camera_id=camera_id,
+                date=date_val,
+                time=time_val
+            )
+        return redirect(request.path)
+
+    # Handle Delete Schedule
+    if request.method == 'POST' and request.POST.get('action') == 'delete':
+        schedule_id = request.POST.get('schedule_id')
+        schedule_obj = AttendanceSchedule.objects.filter(id=schedule_id).first()
+        if schedule_obj:
+            schedule_obj.delete()
+        return redirect(request.path)
+
+    context = {
+        'schedules': schedules,
+        'courses': courses,
+        'cameras': cameras,
+    }
+    return render(request, 'contents/schedule.html', context)
 
 @login_required(login_url='login')
 def settings(request):

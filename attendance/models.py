@@ -20,12 +20,12 @@ class Course(models.Model):
 
 class Camera(models.Model):
     id = models.AutoField(primary_key=True)
-    location = models.CharField(max_length=100)
-    ip_address = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.id} - {self.location} - {self.class_assigned}"
+        return f"{self.id} - {self.name}"
 
 class Student(models.Model):
     id = models.AutoField(primary_key=True)
@@ -58,3 +58,14 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.student.name} - {self.status} - {self.date}"
+
+class AttendanceSchedule(models.Model):
+    id = models.AutoField(primary_key=True)
+    camera = models.ForeignKey(Camera, on_delete=models.CASCADE, related_name='schedules')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='schedules')
+    date = models.DateField()
+    time = models.TimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.course.name} - {self.camera.name} - {self.date} {self.time}"
