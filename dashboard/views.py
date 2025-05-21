@@ -16,7 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import openpyxl
 
-from attendance.models import Student, Attendance, ClassRoom
+from attendance.models import Student, Attendance, Course
 
 
 def login_view(request):
@@ -62,7 +62,7 @@ def dashboard_home(request):
     # Top 3 frequent absentees
     frequent_absentees = students.annotate(absents=Count('attendance', filter=Q(attendance__status='Absent'))).order_by('-absents')[:3]
 
-    classes = ClassRoom.objects.all()
+    classes = Course.objects.all()
 
     context = {
         'total_students': total_students,
@@ -106,7 +106,7 @@ def attendance(request):
     if action == 'download':
         classroom_name = "all_classes"
         if class_id:
-            classroom = ClassRoom.objects.filter(id=class_id).first()
+            classroom = Course.objects.filter(id=class_id).first()
             if classroom:
                 classroom_name = classroom.name.replace(" ", "_")
         attendance_records = Attendance.objects.filter(student__in=students, date=selected_date)
@@ -156,7 +156,7 @@ def attendance(request):
         student.attendance_status = attendance_map.get(student.id, "")
 
     # For class dropdown
-    classes = ClassRoom.objects.all()
+    classes = Course.objects.all()
 
     context = {
         'default_date': selected_date.isoformat(),
@@ -176,14 +176,14 @@ def students(request):
         students = students.filter(student_class_id=class_id)
     if sort_by in ['id', 'name', 'roll_number', 'created_at']:
         students = students.order_by(sort_by)
-    classes = ClassRoom.objects.all()
+    classes = Course.objects.all()
 
     # Handle Add Student
     if request.method == 'POST' and request.POST.get('action') == 'add':
         name = request.POST.get('name')
         class_id_val = request.POST.get('class')
         roll_no = request.POST.get('roll_no')
-        student_class = ClassRoom.objects.filter(id=class_id_val).first() if class_id_val else None
+        student_class = Course.objects.filter(id=class_id_val).first() if class_id_val else None
         image_file = request.FILES.get('image')
         if student_class and name and roll_no:
             student = Student.objects.create(
@@ -216,7 +216,7 @@ def students(request):
         student = Student.objects.filter(id=student_id).first()
         if student:
             student.name = name
-            student.student_class = ClassRoom.objects.filter(id=class_id_val).first() if class_id_val else None
+            student.student_class = Course.objects.filter(id=class_id_val).first() if class_id_val else None
             student.roll_number = roll_no
             student.face_id = str(student.id)
             
@@ -264,7 +264,7 @@ def students(request):
                 roll_no = row[roll_idx]
                 if not (name and class_name and roll_no):
                     continue
-                student_class = ClassRoom.objects.filter(name=class_name).first()
+                student_class = Course.objects.filter(name=class_name).first()
                 if not student_class:
                     continue
                 # Prevent duplicate roll numbers in the same class
@@ -291,15 +291,15 @@ def students(request):
     return render(request, 'contents/students.html', context)
 
 @login_required(login_url='login')
-def classrooms(request):
-    classrooms = ClassRoom.objects.all().order_by('id')
+def courses(request):
+    classrooms = Course.objects.all().order_by('id')
 
     # Handle Add Classroom
     if request.method == 'POST' and request.POST.get('action') == 'add':
         name = request.POST.get('name')
         description = request.POST.get('description')
         if name:
-            ClassRoom.objects.create(name=name, description=description)
+            Course.objects.create(name=name, description=description)
         return redirect(request.path)
 
     # Handle Edit Classroom
@@ -307,7 +307,7 @@ def classrooms(request):
         classroom_id = request.POST.get('classroom_id')
         name = request.POST.get('name')
         description = request.POST.get('description')
-        classroom = ClassRoom.objects.filter(id=classroom_id).first()
+        classroom = Course.objects.filter(id=classroom_id).first()
         if classroom and name:
             classroom.name = name
             classroom.description = description
@@ -317,7 +317,7 @@ def classrooms(request):
     # Handle Delete Classroom
     if request.method == 'POST' and request.POST.get('action') == 'delete':
         classroom_id = request.POST.get('classroom_id')
-        classroom = ClassRoom.objects.filter(id=classroom_id).first()
+        classroom = Course.objects.filter(id=classroom_id).first()
         if classroom:
             classroom.delete()
         return redirect(request.path)
@@ -325,7 +325,7 @@ def classrooms(request):
     context = {
         'classrooms': classrooms,
     }
-    return render(request, 'contents/classrooms.html', context)
+    return render(request, 'contents/courses.html', context)
 
 @login_required(login_url='login')
 def schedule(request):

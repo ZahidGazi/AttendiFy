@@ -7,7 +7,7 @@ urlpatterns = [
     path('', views.dashboard_home, name='dashboard-home'),
     path('attendance', views.attendance, name='attendance'),
     path('students', views.students, name='students'),
-    path('classrooms', views.classrooms, name='classrooms'),
+    path('courses', views.courses, name='courses'),
     path('schedule', views.schedule, name='schedule'),
     path('settings', views.settings, name='settings'),
 ]

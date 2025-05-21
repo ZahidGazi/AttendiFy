@@ -9,7 +9,7 @@ class Admin(models.Model):
     def __str__(self):
         return f"{self.id} - {self.username}"
 
-class ClassRoom(models.Model):
+class Course(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -21,7 +21,6 @@ class ClassRoom(models.Model):
 class Camera(models.Model):
     id = models.AutoField(primary_key=True)
     location = models.CharField(max_length=100)
-    class_assigned = models.ForeignKey(ClassRoom, on_delete=models.SET_NULL, null=True, blank=True, related_name='cameras')
     ip_address = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -31,7 +30,7 @@ class Camera(models.Model):
 class Student(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    student_class = models.ForeignKey(ClassRoom, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
+    student_class = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
     roll_number = models.CharField(max_length=50)
     face_id = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -59,7 +58,3 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.student.name} - {self.status} - {self.date}"
-
-# NOTE: To start Student.id at 10000, you must set the sequence in the database after migration.
-# For PostgreSQL: ALTER SEQUENCE attendance_student_id_seq RESTART WITH 10000;
-# For SQLite: UPDATE sqlite_sequence SET seq = 9999 WHERE name = 'attendance_student';
