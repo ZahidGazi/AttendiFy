@@ -328,8 +328,8 @@ def classrooms(request):
     return render(request, 'contents/classrooms.html', context)
 
 @login_required(login_url='login')
-def alerts(request):
-    return render(request, 'contents/alerts.html')
+def schedule(request):
+    return render(request, 'contents/schedule.html')
 
 @login_required(login_url='login')
 def settings(request):
