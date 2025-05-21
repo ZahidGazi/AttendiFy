@@ -8,40 +8,42 @@
     background-color: aqua;
 } */
 
-
-
 .main_container {
-    height: calc(100vh - 95px);
-    width: 100%;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
+  height: calc(100vh - 95px);
+  width: 100%;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
 }
 
 #sidebar {
-    width: 200px;
-    height: 100%;
+  width: 200px;
+  height: 100%;
 }
 
+#sidebar a.active,
+#sidebar a:hover {
+  background-color: #343a40;
+}
 
 .dashboard_content {
-    width: calc(100% - 200px);
-    height: 100%;
-    background-color: #2b2b2b;
+  width: calc(100% - 200px);
+  height: 100%;
+  background-color: #2b2b2b;
 }
 
-.table_data{
-     max-height: 400px;
-     overflow-y: auto;
-     border-radius: 8px;
+.table_data {
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 8px;
 }
 
 .dropdown-bg option {
-    background-color: #212529 !important; 
-    color: #fff;
+  background-color: #212529 !important;
+  color: #fff;
 }
 .dropdown-bg:focus option {
-    background-color: #212529 !important;
-    color: #fff;
+  background-color: #212529 !important;
+  color: #fff;
 }

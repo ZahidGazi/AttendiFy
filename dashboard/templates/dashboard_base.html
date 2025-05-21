@@ -33,9 +33,19 @@
     <div class="d-flex main_container">
         <!-- Sidebar -->
         <nav class="border-end bg-dark text-white pt-3 position-relative" id="sidebar">
-            <button id="sidebarToggle" class="btn btn-secondary position-absolute"
-                style="top: 50%; right: -18px; transform: translateY(-50%); z-index: 1050; border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                <span id="sidebarToggleIcon">&#11164;</span>
+            <button id="sidebarToggle" class="btn btn-secondary position-absolute" style="top: 50%; right: -18px; transform: translateY(-50%); z-index: 1050; border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                <!-- Close icon -->
+                <svg id="sidebarCloseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 11V8L8 12L12 16V13H16V11H12Z">
+                    </path>
+                </svg>
+                <!-- Open icon -->
+                <svg id="sidebarOpenIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                    <path
+                        d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 11H8V13H12V16L16 12L12 8V11Z">
+                    </path>
+                </svg>
             </button>
             <ul class="nav flex-column mt-4">
                 <li class="nav-item mb-2">
@@ -92,22 +102,24 @@
 const sidebar = document.getElementById('sidebar');
 const dashboardContent = document.getElementById('dashboardContent');
 const toggleBtn = document.getElementById('sidebarToggle');
-const toggleIcon = document.getElementById('sidebarToggleIcon');
+const closeIcon = document.getElementById('sidebarCloseIcon');
+const openIcon = document.getElementById('sidebarOpenIcon');
 let sidebarOpen = true;
 toggleBtn.addEventListener('click', function() {
     sidebarOpen = !sidebarOpen;
     sidebar.style.transition = 'all 0.5s';
     dashboardContent.style.transition = 'width 0.5s';
-    
     if (!sidebarOpen) {
         sidebar.getElementsByTagName("ul")[0].style.display = "none";
         sidebar.style.width = '20px';
         dashboardContent.style.width = 'calc(100% - 20px)';
-        toggleIcon.innerHTML = '&#11166';
+        closeIcon.style.display = 'none';
+        openIcon.style.display = 'inline';
     } else {
         sidebar.style.width = '200px';
         dashboardContent.style.width = 'calc(100% - 200px)';
-        toggleIcon.innerHTML = '&#11164;';
+        closeIcon.style.display = 'inline';
+        openIcon.style.display = 'none';
         setTimeout(function() {
             sidebar.style.transition = 'display 0.5s';
             sidebar.getElementsByTagName("ul")[0].style.display = "block";
