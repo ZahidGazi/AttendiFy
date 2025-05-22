@@ -1,5 +1,8 @@
+wheel
 django
 psycopg2
 python-dotenv
 openpyxl
 pandas
+opencv-python
+face_recognition

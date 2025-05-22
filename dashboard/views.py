@@ -15,8 +15,10 @@ from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
 
 import openpyxl
+# from asgiref.sync import async_to_sync
 
 from attendance.models import Student, Attendance, Course, Camera, AttendanceSchedule
+from attendance.take_attendance import take_attendance
 
 
 def login_view(request):
@@ -102,6 +104,9 @@ def attendance(request):
     if class_id:
         students = students.filter(student_class_id=class_id)
 
+    cameras = Camera.objects.all()
+    message = None
+
     # Handle download action
     if action == 'download':
         classroom_name = "all_classes"
@@ -149,6 +154,16 @@ def attendance(request):
                     defaults={'status': status}
                 )
 
+    # Handle manual take_attendance POST
+    if request.method == 'POST' and request.POST.get('action') == 'take_attendance':
+        course_id = request.POST.get('course')
+        camera_id = request.POST.get('camera')
+        date_val = request.POST.get('date') or selected_date
+        result = take_attendance(camera_id, course_id, for_date=date_val)
+        # result = async_to_sync(take_attendance)(camera_id, course_id, for_date=date_val)
+
+        return redirect(f"{request.path}?class={course_id}&date={date_val}&message={str(result)}")
+
     # Get attendance records for the selected date
     attendance_records = Attendance.objects.filter(student__in=students, date=selected_date)
     attendance_map = {a.student.id: a.status for a in attendance_records}
@@ -157,13 +172,15 @@ def attendance(request):
 
     # For class dropdown
     classes = Course.objects.all()
-
+    message = request.GET.get('message') or message
     context = {
         'default_date': selected_date.isoformat(),
         'students': students,
         'attendance_map': attendance_map,
         'classes': classes,
         'selected_class_id': class_id or '',
+        'cameras': cameras,
+        'message': message,
     }
     return render(request, 'contents/attendance.html', context)
 
