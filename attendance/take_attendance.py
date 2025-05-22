@@ -28,14 +28,14 @@ def take_attendance(camera_id, course_id, for_date=None, for_time=None, duration
         for_date (str or date): Date for attendance (default: today)
         for_time (str or time): Time for attendance (default: now)
         duration (int): Duration in seconds to run recognition (default: 10)
-        Returns: str: Result message"""
+        Returns: tuple[bool: status, str: message]"""
     try:
         camera = Camera.objects.get(id=camera_id)
         course = Course.objects.get(id=course_id)
     except (Camera.DoesNotExist, Course.DoesNotExist):
         msg = f"Camera or Course not found: camera_id={camera_id}, course_id={course_id}"
         logger.error(msg)
-        return msg
+        return False, msg
 
     if for_date is None:
         for_date = date.today()
@@ -44,7 +44,7 @@ def take_attendance(camera_id, course_id, for_date=None, for_time=None, duration
             for_date = datetime.strptime(for_date, "%Y-%m-%d").date()
         except ValueError:
             logger.error(f"Invalid date format: {for_date}")
-            return f"Invalid date format: {for_date}"
+            return False, f"Invalid date format: {for_date}"
 
     if for_time is None:
         for_time = datetime.now().time()
@@ -70,7 +70,7 @@ def take_attendance(camera_id, course_id, for_date=None, for_time=None, duration
         video.release()
         msg = f"Camera could not be opened, camera Adress: {camera.address}"
         logger.error(msg)
-        return msg
+        return False, msg
 
     start_time = datetime.now()
     while (datetime.now() - start_time).total_seconds() < duration:
@@ -98,7 +98,7 @@ def take_attendance(camera_id, course_id, for_date=None, for_time=None, duration
     if not recognized_ids:
         msg = f"Recognition failed or no faces detected"
         logger.info(msg)
-        return msg
+        return False, msg
 
     aware_timestamp = timezone.make_aware(datetime.combine(for_date, for_time))
 
@@ -116,7 +116,7 @@ def take_attendance(camera_id, course_id, for_date=None, for_time=None, duration
                     }
                 )
         logger.info(f"Attendance taken for course={course.name}, camera={camera.name}, date={for_date}")
-        return "Attendance taken successfully"
+        return True, "Attendance taken successfully"
     except Exception as e:
         logger.error(f"Attendance error: {e}")
-        return str(e)
+        return False, str(e)

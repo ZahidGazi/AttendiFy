@@ -6,3 +6,5 @@ openpyxl
 pandas
 opencv-python
 face_recognition
+apscheduler
+django-apscheduler

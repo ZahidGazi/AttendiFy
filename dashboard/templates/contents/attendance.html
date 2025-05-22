@@ -5,7 +5,7 @@
 {% block dashboard_content %}
 {% if message %}
 <div class="alert alert-info alert-dismissible fade show position-absolute top-0 end-0 mt-3 me-5" role="alert">
-  {{ message }}
+  Status: {{ status }} <br/>Message: {{ message }}
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% endif %}

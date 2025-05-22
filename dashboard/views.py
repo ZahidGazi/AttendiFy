@@ -106,6 +106,7 @@ def attendance(request):
 
     cameras = Camera.objects.all()
     message = None
+    a_status = None
 
     # Handle download action
     if action == 'download':
@@ -159,10 +160,10 @@ def attendance(request):
         course_id = request.POST.get('course')
         camera_id = request.POST.get('camera')
         date_val = request.POST.get('date') or selected_date
-        result = take_attendance(camera_id, course_id, for_date=date_val)
+        a_status, result = take_attendance(camera_id, course_id, for_date=date_val)
         # result = async_to_sync(take_attendance)(camera_id, course_id, for_date=date_val)
 
-        return redirect(f"{request.path}?class={course_id}&date={date_val}&message={str(result)}")
+        return redirect(f"{request.path}?class={course_id}&date={date_val}&status={a_status}&message={str(result)}")
 
     # Get attendance records for the selected date
     attendance_records = Attendance.objects.filter(student__in=students, date=selected_date)
@@ -172,6 +173,7 @@ def attendance(request):
 
     # For class dropdown
     classes = Course.objects.all()
+    a_status= request.GET.get('status') or a_status
     message = request.GET.get('message') or message
     context = {
         'default_date': selected_date.isoformat(),
@@ -180,6 +182,7 @@ def attendance(request):
         'classes': classes,
         'selected_class_id': class_id or '',
         'cameras': cameras,
+        "status": a_status,
         'message': message,
     }
     return render(request, 'contents/attendance.html', context)

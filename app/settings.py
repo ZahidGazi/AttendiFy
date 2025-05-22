@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dashboard',
     'attendance',
+    'django_apscheduler',
 ]
 
 
@@ -126,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.getenv('DJANGO_TIME_ZONE', 'Asia/Kolkata')
 
 USE_I18N = True
 
@@ -166,6 +167,11 @@ LOGGING = {
     },
     'loggers': {
         'recognition': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'scheduler': {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
