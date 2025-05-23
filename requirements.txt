@@ -1,3 +1,4 @@
+gunicorn
 wheel
 django
 psycopg2
@@ -8,3 +9,4 @@ opencv-python
 face_recognition
 apscheduler
 django-apscheduler
+whitenoise
