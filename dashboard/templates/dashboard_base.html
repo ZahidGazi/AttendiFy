@@ -67,21 +67,15 @@
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="{% url 'courses' %}"
-                        class="nav-link {% if request.resolver_match.url_name == 'courses' %}active text-primary{% else %}text-white{% endif %}">
-                        Courses
+                    <a href="{% url 'camera_and_courses' %}"
+                        class="nav-link {% if request.resolver_match.url_name == 'camera_and_courses' %}active text-primary{% else %}text-white{% endif %}">
+                        Camera & Courses
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="{% url 'schedule' %}"
                         class="nav-link {% if request.resolver_match.url_name == 'schedule' %}active text-primary{% else %}text-white{% endif %}">
                         Schedule
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="{% url 'settings' %}"
-                        class="nav-link {% if request.resolver_match.url_name == 'settings' %}active text-primary{% else %}text-white{% endif %}">
-                        Settings
                     </a>
                 </li>
             </ul>

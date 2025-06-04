@@ -20,7 +20,7 @@ def parse_camera_address(address):
         return str(address)
 
 
-def take_attendance(camera_id, course_id, for_date=None, for_time=None, duration=10):
+def take_attendance(camera_id, course_id, for_date=None, for_time=None, duration=20):
     """Take attendance for a course using a camera.
     Args:
         camera_id (int): ID of the camera
@@ -55,13 +55,21 @@ def take_attendance(camera_id, course_id, for_date=None, for_time=None, duration
     known_encodings = []
     known_ids = []
     for student in students:
-        img_path = os.path.join(face_data_dir, f"{student.id}.jpg")
-        if os.path.exists(img_path):
-            image = face_recognition.load_image_file(img_path)
-            encodings = face_recognition.face_encodings(image)
-            if encodings:
-                known_encodings.append(encodings[0])
-                known_ids.append(student.id)
+        img_path_jpg = os.path.join(face_data_dir, f"{student.id}.jpg")
+        img_path_png = os.path.join(face_data_dir, f"{student.id}.png")
+
+        if os.path.exists(img_path_jpg):
+            img_path = img_path_jpg
+        elif os.path.exists(img_path_png):
+            img_path = img_path_png
+        else:
+            continue 
+
+        image = face_recognition.load_image_file(img_path)
+        encodings = face_recognition.face_encodings(image)
+        if encodings:
+            known_encodings.append(encodings[0])
+            known_ids.append(student.id)
 
     recognized_ids = set()
     
@@ -80,8 +88,8 @@ def take_attendance(camera_id, course_id, for_date=None, for_time=None, duration
             logger.error(msg)
             continue
 
-        small_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
-        rgb_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB)
+        # small_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
+        rgb_small_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         rgb_small_frame = np.ascontiguousarray(rgb_small_frame)
 
         face_locations = face_recognition.face_locations(rgb_small_frame, model="hog")
@@ -92,6 +100,7 @@ def take_attendance(camera_id, course_id, for_date=None, for_time=None, duration
             if True in matches:
                 index = matches.index(True)
                 recognized_ids.add(known_ids[index])
+                logger.info(f"Recognised student with ID: {known_ids[index]}")
 
     video.release()
     logger.info(f"Recognition complete. Recognized IDs: {recognized_ids}")

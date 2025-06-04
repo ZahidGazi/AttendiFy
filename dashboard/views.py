@@ -100,7 +100,7 @@ def attendance(request):
     else:
         selected_date = date.today()
 
-    students = Student.objects.all().select_related('student_class')
+    students = Student.objects.all().select_related('student_class').order_by('id')
     if class_id:
         students = students.filter(student_class_id=class_id)
 
@@ -311,19 +311,28 @@ def students(request):
     return render(request, 'contents/students.html', context)
 
 @login_required(login_url='login')
-def courses(request):
+def camera_courses(request):
     classrooms = Course.objects.all().order_by('id')
+    cameras = Camera.objects.all().order_by('id')
 
     # Handle Add Classroom
-    if request.method == 'POST' and request.POST.get('action') == 'add':
+    if request.method == 'POST' and request.POST.get('action') == 'addclass':
         name = request.POST.get('name')
         description = request.POST.get('description')
         if name:
             Course.objects.create(name=name, description=description)
         return redirect(request.path)
+    
+    # Handle Add Camera
+    if request.method == 'POST' and request.POST.get('action') == 'addcamera':
+        name = request.POST.get('name')
+        cam_address = request.POST.get("cam_address")
+        if name:
+            Camera.objects.create(name=name, address=cam_address)
+        return redirect(request.path)
 
     # Handle Edit Classroom
-    if request.method == 'POST' and request.POST.get('action') == 'edit':
+    if request.method == 'POST' and request.POST.get('action') == 'editclass':
         classroom_id = request.POST.get('classroom_id')
         name = request.POST.get('name')
         description = request.POST.get('description')
@@ -333,19 +342,43 @@ def courses(request):
             classroom.description = description
             classroom.save()
         return redirect(request.path)
+    
+    # Handle Edit Camera
+    if request.method == 'POST' and request.POST.get('action') == 'editcamera':
+        camera_id = request.POST.get('camera_id')
+        name = request.POST.get('name')
+        cam_address = request.POST.get('cam_address')
+        camera = Camera.objects.filter(id=camera_id).first()
+        if camera and name:
+            camera.name = name
+            camera.address = cam_address
+            camera.save()
+        return redirect(request.path)
 
     # Handle Delete Classroom
-    if request.method == 'POST' and request.POST.get('action') == 'delete':
+    if request.method == 'POST' and request.POST.get('action') == 'deleteclass':
         classroom_id = request.POST.get('classroom_id')
         classroom = Course.objects.filter(id=classroom_id).first()
         if classroom:
+            # delete all students linked to this class
+            Student.objects.filter(student_class=classroom).delete()
             classroom.delete()
+
+        return redirect(request.path)
+    
+    # Handle Delete Camera
+    if request.method == 'POST' and request.POST.get('action') == 'deletecamera':
+        camera_id = request.POST.get('camera_id')
+        camera = Camera.objects.filter(id=camera_id).first()
+        if camera:
+            camera.delete()
         return redirect(request.path)
 
     context = {
         'classrooms': classrooms,
+        'cameras': cameras,
     }
-    return render(request, 'contents/courses.html', context)
+    return render(request, 'contents/camera_and_courses.html', context)
 
 @login_required(login_url='login')
 def schedule(request):
@@ -384,6 +417,3 @@ def schedule(request):
     }
     return render(request, 'contents/schedule.html', context)
 
-@login_required(login_url='login')
-def settings(request):
-    return render(request, 'contents/settings.html')

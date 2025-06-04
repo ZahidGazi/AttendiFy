@@ -10,7 +10,9 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc libpq-dev build-essential python3-dev cmake libgl1 libglib2.0-0 libsm6 libxext6 libxrender-dev libopencv-dev && \
+    apt-get install -y --no-install-recommends gcc libpq-dev\
+    build-essential python3-dev cmake libgl1 libglib2.0-0 libsm6\
+    libxext6 libxrender-dev libopencv-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -21,11 +23,11 @@ RUN pip install --upgrade pip && \
 # Copy project files
 COPY . /app/
 
-# Collect static files (if using Django staticfiles)
+# Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Expose port (default Django port)
+# Expose port 
 EXPOSE 8000
 
-# Start server (use gunicorn for production)
+# Start server 
 CMD ["gunicorn", "app.wsgi:application", "--bind", "0.0.0.0:8000", "--workers=3"]
